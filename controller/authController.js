@@ -145,9 +145,51 @@ exports.verifyOtp = async (req, res) => {
   } else {
     // desposing the opt after using it one time
     userExsits[0].otp = undefined;
+    userExsits[0].isOtpVerified = true;
     await userExsits[0].save();
     res.status(200).json({
       message: "Opt is correct",
     });
   }
+};
+
+// reset Password
+
+exports.resetPassowrd = async (req, res) => {
+  const { email, newPassword, conformPassword, isOtpVerified } = req.body;
+  if (!email || !newPassword || !conformPassword) {
+    return res.status(400).json({
+      message: "Please Provide an email and passowds",
+    });
+  }
+  // checkign newpassword and comform password
+  if (newPassword !== conformPassword) {
+    return res.status(404).json({
+      message:
+        "Please enter same password in both newPassword and comform Password",
+    });
+  }
+
+  // finding email and saving the new passowrd
+  const userExists = await Users.find({ userEmail: email });
+  if (userExists.length == 0) {
+    return res.status(400).json({
+      message: "This emial is not registered",
+    });
+  }
+
+  if (isOtpVerified !== true) {
+    return res.status(403).json({
+      message:
+        "you have already reset your password. Please request for new OTP and try to reset the password",
+    });
+  }
+
+  userExists[0].userPassword = bcrypt.hashSync(newPassword, 10);
+  userExsits[0].isOtpVerified = false;
+  await userExists[0].save();
+
+  res.status(200).json({
+    message: "Your Password reset successfully",
+  });
 };
