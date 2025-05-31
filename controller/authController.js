@@ -119,3 +119,35 @@ exports.forgetPassword = async (req, res) => {
     message: "Email Sent Successfully.",
   });
 };
+
+// Verify OPT
+
+exports.verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) {
+    return res.status(400).json({
+      message: "Please Provide Email. OTP",
+    });
+  }
+  // checking the email is registered or not
+  userExsits = await Users.find({ userEmail: email });
+  if (userExsits.length == 0) {
+    return res.status(404).json({
+      message: "This email is not registered",
+    });
+  }
+
+  // checking opt is correct or not
+  if (userExsits[0].otp !== otp) {
+    res.status(400).json({
+      message: "Invalid OTP",
+    });
+  } else {
+    // desposing the opt after using it one time
+    userExsits[0].otp = undefined;
+    await userExsits[0].save();
+    res.status(200).json({
+      message: "Opt is correct",
+    });
+  }
+};
