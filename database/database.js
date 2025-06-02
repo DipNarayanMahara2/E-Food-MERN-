@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Users = require("../model/userSchema");
+const adminSeeder = require("../adminSeeder");
 
 exports.connectDatabase = async () => {
   // Connecting database
@@ -12,22 +12,5 @@ exports.connectDatabase = async () => {
     console.log(error);
   }
 
-  //   Admin Seeder
-
-  const isAdminExists = await Users.findOne({ userEmail: "admin@gmail.com " });
-  console.log(isAdminExists);
-
-  if (!isAdminExists) {
-    await Users.create({
-      userEmail: "admin@gmail.com",
-      userPassword: "admin",
-      userPhoneNumber: 9814392678,
-      userName: "admin",
-      role: "admin",
-    });
-
-    console.log("admin seeded successfully..");
-  } else {
-    console.log("Admin already seeded...");
-  }
+  adminSeeder();
 };

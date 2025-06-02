@@ -7,6 +7,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const router = require("./routes/authRoute");
+const productRouter = require("./routes/productRoute");
 
 // requiring dotenv
 require("dotenv").config();
@@ -24,6 +25,9 @@ app.get("/", (req, res) => {
 
 // auth Routes
 app.use("", router);
+
+// products rotues
+app.use("", productRouter);
 
 // Server Listening
 const port = process.env.PORT;
