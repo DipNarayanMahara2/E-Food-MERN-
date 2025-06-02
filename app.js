@@ -6,7 +6,6 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const { registerUser, userLogin } = require("./controller/authController");
 const router = require("./routes/authRoute");
 
 // requiring dotenv
