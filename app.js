@@ -29,6 +29,8 @@ app.use("", router);
 // products rotues
 app.use("", productRouter);
 
+// giving access to seek a file in web
+app.use(express.static("./uploads"));
 // Server Listening
 const port = process.env.PORT;
 app.listen(port, () => {

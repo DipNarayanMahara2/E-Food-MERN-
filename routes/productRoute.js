@@ -3,6 +3,8 @@ const {
 } = require("../controller/admin/product/productController");
 const isAuthenticated = require("../middleware/isAuthenticated");
 const restricTo = require("../middleware/restricTo");
+const { multer, storage } = require("../middleware/multerConfig");
+const upload = multer({ storage: storage });
 
 const productRouter = require("express").Router();
 
@@ -10,6 +12,11 @@ const productRouter = require("express").Router();
 
 productRouter
   .route("/product")
-  .post(isAuthenticated, restricTo("admin"), createProduct);
+  .post(
+    isAuthenticated,
+    restricTo("admin"),
+    upload.single("productImage"),
+    createProduct
+  );
 
 module.exports = productRouter;
