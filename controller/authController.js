@@ -22,23 +22,17 @@ exports.registerUser = async (req, res) => {
     });
   }
 
-  try {
-    const newUser = await Users.create({
-      userName: userName,
-      userPhoneNumber: phoneNumber,
-      userEmail: email,
-      userPassword: bcrypt.hashSync(password, 10),
-    });
+  const newUser = await Users.create({
+    userName: userName,
+    userPhoneNumber: phoneNumber,
+    userEmail: email,
+    userPassword: bcrypt.hashSync(password, 10),
+  });
 
-    res.status(201).json({
-      message: "User registered successfully...",
-      user: newUser,
-    });
-  } catch (error) {
-    res.status(400).json({
-      message: "Something went wrong...",
-    });
-  }
+  res.status(201).json({
+    message: "User registered successfully...",
+    user: newUser,
+  });
 };
 
 // user Login logics
