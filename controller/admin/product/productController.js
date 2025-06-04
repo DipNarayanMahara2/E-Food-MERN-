@@ -1,4 +1,6 @@
+const path = require("path");
 const Products = require("../../../model/productModel");
+const fs = require("fs");
 
 exports.createProduct = async (req, res) => {
   try {
@@ -26,6 +28,12 @@ exports.createProduct = async (req, res) => {
       !productStatus ||
       !productQty
     ) {
+      // Delete uploaded file if validation fails
+      if (file && file.filename) {
+        fs.unlink("./uploads/" + file.filename, (err) => {
+          if (err) console.log("Error deleting file:", err);
+        });
+      }
       return res.status(400).json({
         message: "Please provide all the information.",
       });
@@ -45,6 +53,12 @@ exports.createProduct = async (req, res) => {
       products: newProducts,
     });
   } catch (error) {
+    // Delete uploaded file if any error occurs
+    if (req.file && req.file.filename) {
+      fs.unlink("./uploads/" + req.file.filename, (err) => {
+        if (err) console.log("Error deleting file:", err);
+      });
+    }
     res.status(500).json({
       message: `Something went wrong...`,
     });
@@ -91,5 +105,115 @@ exports.getProduct = async (req, res) => {
   res.status(200).json({
     message: "product fetched successfully.",
     product,
+  });
+};
+
+exports.deleteProduct = async (req, res) => {
+  const { id } = req.params;
+  if (!id) {
+    return res.status(400).json({
+      message: "Please provide product id",
+    });
+  }
+  // checking prodcut exsits or not
+  const productExist = await Products.findById(id);
+  if (!productExist) {
+    return res.status(404).json({
+      message: "There no product with this id",
+    });
+  }
+
+  // Delete uploaded file after delete operation is successful
+
+  // Get image path and delete file
+
+  const oldProductImage = productExist.productImage;
+  const lengthToCut = process.env.SERVER_LINK.length;
+  let finalFilePath = oldProductImage.slice(lengthToCut);
+  // Join with correct absolute path
+  const fullFilePath = path.join("./uploads", finalFilePath);
+
+  fs.unlink(fullFilePath, (err) => {
+    if (err) {
+      console.log("Error deleting image file:", err.message);
+    } else {
+      console.log("Deleted");
+    }
+  });
+
+  // Delete product from database
+  await Products.findByIdAndDelete(id);
+  res.status(200).json({
+    message: "Product deleted successfully",
+  });
+};
+
+exports.updateProduct = async (req, res) => {
+  const { id } = req.params;
+
+  const {
+    productName,
+    productDescription,
+    productPrice,
+    productStatus,
+    productQty,
+  } = req.body;
+
+  if (
+    !productName ||
+    !productDescription ||
+    !productPrice ||
+    !productStatus ||
+    !productQty ||
+    !id
+  ) {
+    return res.status(400).json({
+      message: "Please provide product id and all information.",
+    });
+  }
+
+  const oldData = await Products.findById(id);
+  if (!oldData) {
+    return res.status(404).json({
+      message: "No data found with this id",
+    });
+  }
+
+  const oldProductImage = oldData.productImage;
+  const lengthToCut = process.env.SERVER_LINK.length;
+  const finalFilePath = oldProductImage.slice(lengthToCut);
+
+  if (req.file && req.file.filename) {
+    // remove file form upload folder
+    fs.unlink("./uploads/" + finalFilePath, (err) => {
+      if (err) {
+        console.log("Error deleting File", err);
+      } else {
+        console.log("file deleted successfully");
+      }
+    });
+  }
+  const data = await Products.findByIdAndUpdate(
+    id,
+    {
+      productName,
+      productDescription,
+      productPrice,
+      productStatus,
+      productQty,
+      productImage:
+        req.file && req.file.filename
+          ? process.env.SERVER_LINK + req.file.filename
+          : oldProductImage,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  res.status(200).json({
+    message: "Product Updated Successfully.",
+    newData: data,
   });
 };

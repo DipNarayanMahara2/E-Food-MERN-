@@ -2,6 +2,8 @@ const {
   createProduct,
   getProducts,
   getProduct,
+  deleteProduct,
+  updateProduct,
 } = require("../controller/admin/product/productController");
 const isAuthenticated = require("../middleware/isAuthenticated");
 const restricTo = require("../middleware/restricTo");
@@ -23,6 +25,15 @@ productRouter
   )
   .get(getProducts);
 
-productRouter.route("/products/:id").get(catchAsync(getProduct));
+productRouter
+  .route("/products/:id")
+  .get(catchAsync(getProduct))
+  .delete(isAuthenticated, restricTo("admin"), catchAsync(deleteProduct))
+  .patch(
+    isAuthenticated,
+    restricTo("admin"),
+    upload.single("productImage"),
+    catchAsync(updateProduct)
+  );
 
 module.exports = productRouter;
