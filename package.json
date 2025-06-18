@@ -1,0 +1,27 @@
+{
+  "name": "e-food-mern-",
+  "version": "1.0.0",
+  "description": "first project with MERN. Making an Online Food delivering Website.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DipNarayanMahara2/E-Food-MERN-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DipNarayanMahara2/E-Food-MERN-/issues"
+  },
+  "homepage": "https://github.com/DipNarayanMahara2/E-Food-MERN-#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.0"
+  }
+}
