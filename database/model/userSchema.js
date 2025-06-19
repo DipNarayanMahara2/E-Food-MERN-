@@ -22,10 +22,9 @@ const userSchema = mongoose.Schema({
     enum: ["customer", "admin"],
     default: "customer",
   },
-  // userName: {
-  //   type: String,
-  //   require: [true, "userName is required"],
-  // },
+  otp: {
+    type: Number,
+  },
 });
 
 const User = mongoose.model("User", userSchema);
