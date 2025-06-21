@@ -3,6 +3,7 @@ const { connectDatabase } = require("./database/database");
 const app = express();
 require("dotenv").config();
 const authRoute = require("./routes/authRoute");
+const productRouter = require("./routes/productRoute");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -20,6 +21,9 @@ app.get("/", (req, res) => {
 
 // register api
 app.use("/api/auth", authRoute);
+
+// products route
+app.use("", productRouter);
 
 // Listening server
 const port = process.env.PORT;
