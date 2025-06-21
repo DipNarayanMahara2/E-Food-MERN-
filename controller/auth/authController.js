@@ -1,4 +1,4 @@
-const User = require("../../database/model/userSchema");
+const User = require("../../model/userSchema");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../../services/sendEmail");
@@ -97,5 +97,77 @@ exports.forgetPassword = async (req, res) => {
   });
   res.status(200).json({
     message: "Email send Successfully",
+  });
+};
+
+// Verigfy OTP
+exports.verifyOtp = async (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) {
+    return res.status(400).json({
+      message: "Please provide an email or otp",
+    });
+  }
+
+  // check if opt is correct
+  const userFound = await User.find({ userEmail: email });
+  if (userFound.length == 0) {
+    return res.status(400).json({
+      message: "Email is not registered",
+    });
+  }
+  if (userFound[0].otp !== otp) {
+    return res.status(400).json({
+      message: "Invalid Otp",
+    });
+  }
+
+  // disposing the opt after use
+  userFound[0].otp = undefined;
+  await userFound[0].save();
+  res.status(200).json({
+    message: "Otp verified",
+  });
+};
+
+// update password
+exports.updatePassword = async (req, res) => {
+  const { email, newPassword, conformPassword } = req.body;
+  if (!email || !newPassword || !conformPassword) {
+    return res.status(400).json({
+      message: "Please provide all the details",
+    });
+  }
+
+  if (newPassword !== conformPassword) {
+    return res.status(400).json({
+      message: "Password doesn't match. Please insert same passwords",
+    });
+  }
+
+  const userFound = await User.find({ userEmail: email });
+  if (userFound.length == 0) {
+    return res.status(400).json({
+      message: "Email is not registered",
+    });
+  }
+
+  // checking if new password is same old password or not
+  // first need to convert the hashed password to normal password for checking
+  const isSamePassword = bcrypt.compareSync(
+    newPassword,
+    userFound[0].userPassword
+  );
+  if (isSamePassword) {
+    return res.status(400).json({
+      message: "This password is already been used. Please use another one",
+    });
+  }
+
+  userFound[0].userPassword = bcrypt.hashSync(newPassword, 10);
+  await userFound[0].save();
+
+  res.status(200).json({
+    message: "Password reset successfully",
   });
 };
