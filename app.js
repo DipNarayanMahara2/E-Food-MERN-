@@ -23,7 +23,10 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoute);
 
 // products route
-app.use("", productRouter);
+app.use("/api/auth", productRouter);
+
+// telling to give permission to view the image form upload folder
+app.use(express.static("uploads"));
 
 // Listening server
 const port = process.env.PORT;
