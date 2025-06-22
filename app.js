@@ -4,6 +4,7 @@ const app = express();
 require("dotenv").config();
 const authRoute = require("./routes/authRoute");
 const productRouter = require("./routes/productRoute");
+const authUserRouter = require("./routes/adminUsersRoute");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -24,6 +25,9 @@ app.use("/api/auth", authRoute);
 
 // products route
 app.use("/api/auth", productRouter);
+
+// auth users route
+app.use("/api/auth", authUserRouter);
 
 // telling to give permission to view the image form upload folder
 app.use(express.static("uploads"));

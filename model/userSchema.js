@@ -16,14 +16,17 @@ const userSchema = mongoose.Schema({
   userPassword: {
     type: String,
     require: [true, "userPassword is required"],
+    select: false,
   },
   role: {
     type: String,
     enum: ["customer", "admin"],
     default: "customer",
+    
   },
   otp: {
     type: Number,
+    select: false,
   },
 });
 
